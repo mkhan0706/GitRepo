@@ -12,13 +12,13 @@ pipeline {
 
         stage('Terraform Init') {
             steps {
-                sh 'terraform init'
+                bat 'terraform init'
             }
         }
 
         stage('Terraform Validate') {
             steps {
-                sh 'terraform validate'
+                bat 'terraform validate'
             }
         }
 
@@ -29,7 +29,7 @@ pipeline {
                     credentialsId: 'aws-creds'
                 ]]) {
 
-                    sh 'terraform plan'
+                    bat 'terraform plan'
                 }
             }
         }
@@ -41,7 +41,7 @@ pipeline {
                     credentialsId: 'aws-creds'
                 ]]) {
 
-                    sh 'terraform apply --auto-approve'
+                    bat 'terraform apply --auto-approve'
                 }
             }
         }
