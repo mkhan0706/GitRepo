@@ -3,27 +3,46 @@ pipeline {
 
     stages {
 
-        stage('Welcome') {
+        stage('Checkout Code') {
             steps {
-                echo 'Welcome to Jenkins Pipeline'
+                git branch: 'main',
+                url: 'https://github.com/mkhan0706/GitRepo.git'
             }
         }
 
-        stage('Build') {
+        stage('Terraform Init') {
             steps {
-                echo 'Application Build Started'
+                sh 'terraform init'
             }
         }
 
-        stage('Testing') {
+        stage('Terraform Validate') {
             steps {
-                echo 'Running Tests'
+                sh 'terraform validate'
             }
         }
 
-        stage('Deployment') {
+        stage('Terraform Plan') {
             steps {
-                echo 'Deploying Application'
+                withCredentials([[
+                    $class: 'AmazonWebServicesCredentialsBinding',
+                    credentialsId: 'aws-creds'
+                ]]) {
+
+                    sh 'terraform plan'
+                }
+            }
+        }
+
+        stage('Terraform Apply') {
+            steps {
+                withCredentials([[
+                    $class: 'AmazonWebServicesCredentialsBinding',
+                    credentialsId: 'aws-creds'
+                ]]) {
+
+                    sh 'terraform apply --auto-approve'
+                }
             }
         }
     }
